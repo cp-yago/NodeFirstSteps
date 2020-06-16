@@ -1,8 +1,10 @@
 // Criando meu primeiro servidor HTTP
 const express = require('express')
+const cors = require('cors')
 
-const {uuid} = require('uuidv4')
+const {uuid, isUuid} = require('uuidv4')
 
+app.use(cors())
 const app = express()
 
 //informar para o app que ele irá entende o formato json
@@ -10,7 +12,28 @@ app.use(express.json())
 
 const projects = []
 
-app.get('/projects', (request, response) => {
+//middleware
+function logRequests(request, response, next){
+  const { method, url } = request
+  const logLabel = `[${method.toUpperCase()}] ${url}`
+  console.log(logLabel)
+
+  return next()
+}
+
+function validadeProjectId(request, response, next){
+  const { id } = request.params
+  if (!isUuid(id)){
+    return response.status(400).json({error: 'invalid project id.'})
+  }
+  return next()
+}
+
+app.use(logRequests)
+//Outra forma de utilizar os middlewares
+// app.use('/projects/:id', validadeProjectId)
+
+app.get('/projects',(request, response) => {
   const { title } = request.query
 
   const results = title 
@@ -30,7 +53,7 @@ app.post('/projects', (request, response) => {
   return response.json(project)
 })
 
-app.put('/projects/:id', (request, response) => {
+app.put('/projects/:id', validadeProjectId, (request, response) => {
   const {id} = request.params
   const {title, owner} = request.body
 
@@ -51,7 +74,7 @@ app.put('/projects/:id', (request, response) => {
   return response.json(project)
 })
 
-app.delete('/projects/:id', (request, response) => {
+app.delete('/projects/:id', validadeProjectId, (request, response) => {
   const {id} = request.params
 
   const projectIndex = projects.findIndex(project => project.id === id)
@@ -65,7 +88,7 @@ app.delete('/projects/:id', (request, response) => {
   return response.status(204).send()
 })
 
-app.listen(3334, () => {
+app.listen(3333, () => {
   console.log('Back-end started!')
 })
 
