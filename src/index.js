@@ -4,10 +4,11 @@ const cors = require('cors')
 
 const {uuid, isUuid} = require('uuidv4')
 
-app.use(cors())
+
 const app = express()
 
 //informar para o app que ele irá entende o formato json
+app.use(cors())
 app.use(express.json())
 
 const projects = []
