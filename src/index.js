@@ -5,8 +5,10 @@ const express = require('express')
 const app = express()
 
 app.get('/', (request, response) => {
-  return response.json({message: 'Hello Yago!'})
+  return response.json({message: 'Hello Yagoooooo!'})
 })
 
-app.listen(3334)
+app.listen(3334, () => {
+  console.log('Back-end started!')
+})
 
